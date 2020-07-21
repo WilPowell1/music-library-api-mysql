@@ -13,11 +13,15 @@ const setupDatabase = () => {
         logging: false,
     });
 
-    const Artist = ArtistModel(connection, Sequelize);
+    const Artist = ArtistModel(sequelize, Sequelize);
+
+    const Album = AlbumModel(sequelize, Sequelize);
+    Album.belongsTo(Artist, { as: 'artist' });
 
     connection.sync({ alter: true });
     return {
         Artist,
+        Album,
     };
 };
 
