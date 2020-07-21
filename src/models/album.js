@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
     const schema = {
         name: DataTypes.STRING,
-        genre: DataTypes.STRING,
+        year: DataTypes.INTEGER,
     };
 
     const Album = sequelize.define('Album', schema);

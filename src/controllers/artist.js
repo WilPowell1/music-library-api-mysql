@@ -1,11 +1,11 @@
 const { Artist } = require('../models');
 
 exports.create = (req, res) => {
-    Artist.create(req.body).then((user) => res.status(201).json(user));
+    Artist.create(req.body).then((artist) => res.status(201).json(artist));
 };
 
-exports.list = (req, res) => {
-    Artist.findAll(req.body).then((user) => res.status(200).json(artists));
+exports.list = (_, res) => {
+    Artist.findAll().then((artist) => res.status(200).json(artist));
 };
 
 exports.getArtistById = (req, res) => {

@@ -1,13 +1,14 @@
 const { Artist, Album } = require('../models');
 
 exports.createAlbum = (req, res) => {
-    const { id } = req.params.id;
+    const id = req.params.artistId;
     Artist.findByPk(id).then((foundArtist) => {
         if (!foundArtist) {
             res.status(404).json({ error: 'The artist could not be found.' });
         } else {
             Album.create(req.body).then((album) => {
                 album.setArtist(id).then((foundAlbum) => {
+                    console.log(foundAlbum);
                     res.status(201).send(foundAlbum);
                 });
             });
