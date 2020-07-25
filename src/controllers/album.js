@@ -2,6 +2,7 @@ const { Artist, Album } = require('../models');
 
 exports.createAlbum = (req, res) => {
     const id = req.params.artistId;
+
     Artist.findByPk(id).then((foundArtist) => {
         if (!foundArtist) {
             res.status(404).json({ error: 'The artist could not be found.' });
@@ -39,14 +40,18 @@ exports.updateAlbum = (req, res) => {
 };*/
 
 exports.deleteAlbum = (req, res) => {
-    const { id } = req.params.id;
-    Artist.findAll(id).then((deleteAlbum) => {
+    const { artistId } = req.params.artistId;
+    const { albumId } = req.params.albumId;
+
+    Artist.findAll(artistId).then((deleteAlbum) => {
         if (!deleteAlbum) {
             res.status(404).json({ error: 'The artist could not be found.' });
         } else {
-            Album.destroy({ where: { artistId: id } }).then(() => {
-                res.status(204).json(deleteAlbum);
-            });
+            Album.destroy({ where: { artistId: artistId, albumId: albumId } }).then(
+                () => {
+                    res.status(204).json(deleteAlbum);
+                }
+            );
         }
     });
 };

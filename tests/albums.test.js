@@ -67,5 +67,30 @@ describe('/albums', () => {
                     });
                 });
         });
+
+        describe('DELETE /artists/:artistId/albums/:albumsId', () => {
+            it('deletes album record by id', (done) => {
+                const album = albums[0];
+                request(app)
+                    .delete(`/artists/:${artist.id}/albums/:${album.id}`)
+                    .then((res) => {
+                        expect(res.status).to.equal(204);
+                        Album.findByPk(artist.id, { raw: true }).then((updatedAlbum) => {
+                            expect(updatedAlbum).to.equal(null);
+                            done();
+                        });
+                    });
+            });
+
+            it('returns a 404 if the artist does not exist', (done) => {
+                request(app)
+                    .delete('/artists/12345')
+                    .then((res) => {
+                        expect(res.status).to.equal(404);
+                        expect(res.body.error).to.equal('The artist could not be found.');
+                        done();
+                    });
+            });
+        });
     });
 });
