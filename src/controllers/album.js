@@ -1,14 +1,14 @@
 const { Artist, Album } = require('../models');
 
 exports.createAlbum = (req, res) => {
-    const id = req.params.artistId;
+    const artistId = req.params.artistId;
 
-    Artist.findByPk(id).then((foundArtist) => {
+    Artist.findByPk(artistId).then((foundArtist) => {
         if (!foundArtist) {
             res.status(404).json({ error: 'The artist could not be found.' });
         } else {
             Album.create(req.body).then((album) => {
-                album.setArtist(id).then((foundAlbum) => {
+                album.setArtist(artistId).then((foundAlbum) => {
                     console.log(foundAlbum);
                     res.status(201).send(foundAlbum);
                 });
@@ -17,41 +17,65 @@ exports.createAlbum = (req, res) => {
     });
 };
 
-/*exports.readAlbum = (req, res) => {
-    const { id } = req.params.id;
-    Artist.findByPk(id).then((artist) => {
+exports.readAlbumByArtistId = (req, res) => {
+    const artistId = req.params.artistId;
+
+    Artist.findByPk(artistId).then((artist) => {
         if (!artist) {
             res.status(404).json({ error: 'The artist could not be found.' });
         } else {
-            res.status(200).json(artist);
+            Album.findAll({ where: { artistId: artistId } }).then((album) => {
+                res.status(200).json(album);
+            });
         }
     });
 };
 
-exports.updateAlbum = (req, res) => {
-    const { id } = req.params.id;
-    Artist.update(req.body, { where: { id } }).then(([rowsUpdated]) => {
-        if (!rowsUpdated) {
-            res.status(404).json({ error: 'The artist could not be found.' });
-        } else {
-            res.status(200).json(rowsUpdated);
+exports.readAlbumByAlbumId = (req, res) => {
+    const artistId = req.params.artistId;
+    const albumId = req.params.albumId;
+
+    Album.findAll({ where: { id: albumId, artistId: artistId } }).then(
+        (foundAlbum) => {
+            if (foundAlbum.length === 0) {
+                res.status(404).json({ error: 'The album could not be found.' });
+            } else {
+                res.status(200).json(foundAlbum);
+            }
         }
-    });
-};*/
+    );
+};
+
+exports.updateAlbum = (req, res) => {
+    const artistId = req.params.artistId;
+    const albumId = req.params.albumId;
+
+    Album.findAll({ where: { artistId: artistId, id: albumId } }).then(
+        (foundAlbums) => {
+            if (!foundAlbums) {
+                res.status(404).json({ error: 'The album could not be found.' });
+            } else {
+                Album.update(req.body, {
+                    where: { artistId: artistId, id: albumId },
+                }).then((updatedAlbum) => {
+                    res.status(200).json(updatedAlbum);
+                });
+            }
+        }
+    );
+};
 
 exports.deleteAlbum = (req, res) => {
-    const { artistId } = req.params.artistId;
-    const { albumId } = req.params.albumId;
+    const artistId = req.params.artistId;
+    const albumId = req.params.albumId;
 
-    Artist.findAll(artistId).then((deleteAlbum) => {
-        if (!deleteAlbum) {
-            res.status(404).json({ error: 'The artist could not be found.' });
+    Album.destroy({
+        where: { id: albumId, artistId: artistId },
+    }).then((deletedAlbum) => {
+        if (!deletedAlbum) {
+            res.status(404).json({ error: 'The album could not be found.' });
         } else {
-            Album.destroy({ where: { artistId: artistId, albumId: albumId } }).then(
-                () => {
-                    res.status(204).json(deleteAlbum);
-                }
-            );
+            res.status(204).json(deletedAlbum);
         }
     });
 };
